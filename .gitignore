@@ -1,0 +1,14 @@
+node_modules/
+hyperlocal-backend/node_modules/
+hyperlocal-admin/node_modules/
+hyperlocal_mobile/node_modules/
+hyperlocal_mobile/android/app/build/
+hyperlocal_mobile/ios/build/
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+*.log
+.DS_Store
+Thumbs.db 
