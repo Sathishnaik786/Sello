@@ -1,0 +1,73 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("SUPABASE_URL")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  name      String
+  phone     String   @unique
+  password  String
+  role      UserRole
+  stores    Store[]
+  orders    Order[]  @relation("CustomerOrders")
+  createdAt DateTime @default(now())
+}
+
+model Store {
+  id          String   @id @default(uuid())
+  name        String
+  ownerId     String
+  owner       User     @relation(fields: [ownerId], references: [id])
+  products    Product[]
+  orders      Order[]
+  isApproved  Boolean  @default(false)
+  createdAt   DateTime @default(now())
+}
+
+model Product {
+  id        String   @id @default(uuid())
+  name      String
+  description String?
+  price     Float
+  stock     Int
+  storeId   String
+  store     Store    @relation(fields: [storeId], references: [id])
+  barcode   String?
+  image_url String?  // URL to product image stored in Supabase Storage or external host
+}
+
+model Order {
+  id        String   @id @default(uuid())
+  customer  User     @relation("CustomerOrders", fields: [customerId], references: [id])
+  customerId String
+  store     Store    @relation(fields: [storeId], references: [id])
+  storeId   String
+  items     Json
+  status    OrderStatus
+  total     Float
+  createdAt DateTime @default(now())
+}
+
+enum UserRole {
+  CUSTOMER
+  SELLER
+  ADMIN
+}
+
+enum OrderStatus {
+  PENDING
+  READY
+  PICKED_UP
+  CANCELLED
+}
